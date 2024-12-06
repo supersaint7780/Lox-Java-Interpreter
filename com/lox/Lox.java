@@ -8,7 +8,7 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.nio.file.Path;
 import java.util.List;
-import java.util.Scanner;
+import com.lox.Scanner;
 
 public class Lox {
 
@@ -61,7 +61,7 @@ public class Lox {
         }
     }
 
-    private static void error(int line, String message) {
+    public static void error(int line, String message) {
         report(line, "", message);
     }
 
