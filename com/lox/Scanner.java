@@ -52,6 +52,10 @@ public class Scanner {
             case '!' -> addToken(match('=') ? BANG_EQUAL : BANG);
             case '>' -> addToken(match('=') ? GREATER_EQUAL : GREATER);
             case '<' -> addToken(match('=') ? LESS_EQUAL : LESS);
+            case '\n' -> ++line;
+            case ' ', '\r', '\t' -> {
+                // ignore whitespace
+            }
             case '/' -> {
                 if (match('/')) {
                     // We keep moving and scanning until the comment finished
@@ -62,8 +66,51 @@ public class Scanner {
                     addToken(SLASH);
                 }
             }
-            default -> Lox.error(line, "Unexpected character.");
+            case '"' -> string();
+            default -> {
+                if(isDigit(c)) {
+                    number();
+                } else {
+                    Lox.error(line, "Unexpected character.");
+                }
+            }
         }
+    }
+
+    private boolean isDigit(char ch) {
+        return (ch >= '0' && ch <= '9');
+    }
+
+    private void number() {
+        while(isDigit(peek())) {
+            advance();
+        }
+
+        if(peek() == '.' && isDigit(peekNext())) {
+            // consume the .
+            advance();
+            while (isDigit(peek())) advance();
+        }
+
+        addToken(NUMBER, Double.parseDouble(source.substring(start, current)));
+
+    }
+
+    private void string() {
+        while(peek() != '"' && !isAtEnd()) {
+            if(peek() == '\n') {
+                ++line;
+            }
+        }
+
+        if(isAtEnd()) {
+            Lox.error(line, "Unterminated String");
+            return;
+        }
+
+        advance();
+        String value = source.substring(start + 1, current - 1);
+        addToken(STRING, value);
     }
 
     private char peek() {
@@ -72,6 +119,13 @@ public class Scanner {
         }
         return source.charAt(current);
     }
+
+    private char peekNext() {
+        if (current + 1 >= source.length()) {
+            return '\0';
+        }
+        return source.charAt(current + 1);
+      } 
 
     private boolean match(char expected) {
         if (isAtEnd()) {
