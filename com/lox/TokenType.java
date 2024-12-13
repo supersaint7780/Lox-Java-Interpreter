@@ -22,7 +22,7 @@ enum TokenType {
     IF, ELSE, OR, AND, CLASS, 
     THIS, SUPER, FUN, TRUE, FALSE, 
     VAR, FOR, WHILE, NIL, PRINT, 
-    RETURN,
+    RETURN, BREAK, CONTINUE,
 
     EOF
 }
