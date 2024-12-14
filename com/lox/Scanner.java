@@ -85,6 +85,23 @@ public class Scanner {
                     // The end of comment is marked by the end of the line
                     while (peek() != '\n' && !isAtEnd())
                         advance();
+                } else if(match('*')) {
+                    // we keep moving unitl we encounter */
+                    while(peek() != '*' && !isAtEnd()) {
+                        if (peek() == '\n') {
+                            ++line;
+                        }
+                        advance();
+                    }
+
+                    if(isAtEnd() || (peek() == '*' && peekNext() != '/')) {
+                        Lox.error(line, "Unterminated Block comment");
+                        return;
+                    }
+
+                    // for */
+                    advance();
+                    advance();
                 } else {
                     addToken(SLASH);
                 }
@@ -147,6 +164,7 @@ public class Scanner {
             if (peek() == '\n') {
                 ++line;
             }
+            advance();
         }
 
         if (isAtEnd()) {
@@ -154,6 +172,7 @@ public class Scanner {
             return;
         }
 
+        // the closing "
         advance();
         String value = source.substring(start + 1, current - 1);
         addToken(STRING, value);
