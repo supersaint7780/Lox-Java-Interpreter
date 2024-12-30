@@ -5,18 +5,19 @@ public class Interpreter implements Expr.Visitor<Object> {
         try {
             Object value = evaluate(expression);
             System.out.println(stringify(value));
-        } catch(RuntimeError error) {
+        } catch (RuntimeError error) {
             Lox.runtimeError(error);
         }
     }
+
     private String stringify(Object object) {
-        if(object == null) {
+        if (object == null) {
             return "nil";
         }
 
-        if(object instanceof Double) {
+        if (object instanceof Double) {
             String text = object.toString();
-            if(text.endsWith(".0")) {
+            if (text.endsWith(".0")) {
                 text = text.substring(0, text.length() - 2);
             }
             return text;
@@ -24,6 +25,7 @@ public class Interpreter implements Expr.Visitor<Object> {
 
         return object.toString();
     }
+
     private Object evaluate(Expr expr) {
         return expr.accept(this);
     }
@@ -83,6 +85,9 @@ public class Interpreter implements Expr.Visitor<Object> {
             }
             case SLASH -> {
                 checkNumberOperands(expr.operator, left, right);
+                if((double)right == 0.0d) {
+                    throw new RuntimeError(expr.operator, "Division by zero not allowed.");
+                }
                 yield (double) left / (double) right;
             }
             case PLUS -> {
@@ -92,8 +97,11 @@ public class Interpreter implements Expr.Visitor<Object> {
                 if (left instanceof String && right instanceof String) {
                     yield (String) left + (String) right;
                 }
+                if (left instanceof String || right instanceof String) {
+                    yield stringify(left) + stringify(right);
+                }
                 throw new RuntimeError(
-                    expr.operator, "Operands must be two numbers or two strings.");
+                        expr.operator, "Operands must be either number or Strings.");
             }
             case GREATER -> {
                 checkNumberOperands(expr.operator, left, right);
