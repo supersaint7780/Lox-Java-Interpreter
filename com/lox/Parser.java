@@ -25,7 +25,28 @@ class Parser {
     }
 
     private Expr expression() {
-        return equality();
+        return comma();
+    }
+
+    private Expr comma() {
+        Expr expr = conditional();
+        while(match(COMMA)) {
+            Token operator = previous();
+            Expr right = conditional();
+            expr = new Expr.Binary(expr, operator, right);
+        }
+        return expr;
+    }
+
+    private Expr conditional() {
+        Expr expr = equality();
+        if(match(QUESTION)) {
+            Expr trueExpr = conditional();
+            consume(COLON, " Expect ':' after expression");
+            Expr falseExpr = conditional();
+            expr = new Expr.Ternary(expr, trueExpr, falseExpr);
+        }
+        return expr;
     }
 
     private Expr equality() {
@@ -174,6 +195,4 @@ class Parser {
     private Token previous() {
         return tokens.get(current - 1);
     }
-
-
 }
