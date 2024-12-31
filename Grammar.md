@@ -7,3 +7,8 @@
 - factor -> unary ( ( "/" | "*" ) unary )* ;
 - unary -> ( "!" | "-" ) unary | primary ;
 - primary -> NUMBER | STRING | "true" | "false" | "nil" | "(" expression ")" ;
+
+- program -> statement* EOF;
+- statement -> exprStmt | printStmt;
+- exprStmt -> expression ";" ;
+- printStmt -> "print" expression ";";
