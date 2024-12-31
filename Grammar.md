@@ -1,3 +1,11 @@
+### Terminology
+- ? : optional 
+- \* : zero or more
+- Values in quotes or block letter indicate terminals
+- Values in smallcase indicate non-terminals
+- | : or i.e either or the given choice
+
+### Language Grammar
 - expression -> comma ;
 - comma -> conditional ("," conditional)* ;
 - conditional -> equality ("?" conditional ":" conditonal)? ;
@@ -8,7 +16,7 @@
 - unary -> ( "!" | "-" ) unary | primary ;
 - primary -> NUMBER | STRING | "true" | "false" | "nil" | "(" expression ")" ;
 
-- program -> statement* EOF;
+- program -> declaration* EOF;
+- declaration -> varDecl | statement;
 - statement -> exprStmt | printStmt;
-- exprStmt -> expression ";" ;
-- printStmt -> "print" expression ";";
+- varDecl -> "var" IDENTIFIER ("=" expression)? ";" ; 
