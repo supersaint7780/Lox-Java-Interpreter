@@ -7,7 +7,8 @@
 
 ### Language Grammar
 - expression -> comma ;
-- comma -> conditional ("," conditional)* ;
+- comma -> assignment ("," assignment)* ;
+- assignment -> IDENTIFIER "=" assignment | conditional;
 - conditional -> equality ("?" conditional ":" conditonal)? ;
 - equality -> comparison ( ( "!=" | "==" ) comparison )* ;
 - comparison -> term ( ( ">" | ">=" | "<" | "<=" ) term )* ;
