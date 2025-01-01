@@ -5,7 +5,9 @@
 - Values in smallcase indicate non-terminals
 - | : or i.e either or the given choice
 
-### Language Grammar
+## Language Grammar
+
+### Expression Grammara
 - expression -> comma ;
 - comma -> assignment ("," assignment)* ;
 - assignment -> IDENTIFIER "=" assignment | conditional;
@@ -17,6 +19,8 @@
 - unary -> ( "!" | "-" ) unary | primary ;
 - primary -> NUMBER | STRING | "true" | "false" | "nil" | "(" expression ")" | IDENTIFIER;
 
+
+### Statement Grammar
 - program -> declaration* EOF;
 - declaration -> varDecl | statement;
 - statement -> exprStmt | printStmt;
