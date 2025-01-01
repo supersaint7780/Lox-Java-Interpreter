@@ -75,11 +75,26 @@ class Parser {
     }
 
     private Expr comma() {
-        Expr expr = conditional();
+        Expr expr = assignment();
         while (match(COMMA)) {
             Token operator = previous();
-            Expr right = conditional();
+            Expr right = assignment();
             expr = new Expr.Binary(expr, operator, right);
+        }
+        return expr;
+    }
+
+    private Expr assignment() {
+        Expr expr = conditional();
+        if (match(EQUAL)) {
+            Token equals = previous();
+            Expr value = assignment();
+            if (expr instanceof Expr.Variable) {
+                Token name = ((Expr.Variable) expr).name;
+                return new Expr.Assign(name, value);
+            }
+
+            error(equals, "Invalid Assignment target.");
         }
         return expr;
     }
@@ -163,7 +178,7 @@ class Parser {
             return new Expr.Literal(previous().literal);
         }
 
-        if(match(IDENTIFIER)) {
+        if (match(IDENTIFIER)) {
             return new Expr.Variable(previous());
         }
 

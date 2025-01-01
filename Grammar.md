@@ -7,7 +7,7 @@
 
 ## Language Grammar
 
-### Expression Grammara
+### Expression Grammar
 - expression -> comma ;
 - comma -> assignment ("," assignment)* ;
 - assignment -> IDENTIFIER "=" assignment | conditional;
