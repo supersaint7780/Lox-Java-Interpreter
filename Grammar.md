@@ -23,5 +23,6 @@
 ### Statement Grammar
 - program -> declaration* EOF;
 - declaration -> varDecl | statement;
-- statement -> exprStmt | printStmt;
+- statement -> exprStmt | printStmt | block;
+- block -> "{" declaration* "}";
 - varDecl -> "var" IDENTIFIER ("=" expression)? ";" ; 
