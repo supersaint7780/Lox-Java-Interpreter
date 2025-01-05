@@ -26,8 +26,10 @@
 ### Statement Grammar
 - program -> declaration* EOF;
 - declaration -> varDecl | statement;
-- statement -> exprStmt | printStmt | block | ifStmt | whileStmt;
+- statement -> exprStmt | printStmt | block | ifStmt | whileStmt | forStmt;
+- forStmt -> "for" "(" (varDecl | exprStmt | ";") expression? ";" expression? ")" statement;
 - whileStmt -> "while" "(" expression ")" statement;
 - ifStmt -> "if" "(" expression ")" statement ("else" statement)? ;
 - block -> "{" declaration* "}";
 - varDecl -> "var" IDENTIFIER ("=" expression)? ";" ; 
+- exprStmt -> expression ";" ;

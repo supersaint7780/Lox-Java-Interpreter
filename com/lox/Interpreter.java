@@ -6,9 +6,10 @@ import java.util.List;
 
 public class Interpreter implements Expr.Visitor<Object>, Stmt.Visitor<Void> {
     private Environment environment = new Environment();
+
     public void interpret(List<Stmt> statements) {
         try {
-            for(Stmt statement: statements) {
+            for (Stmt statement : statements) {
                 execute(statement);
             }
         } catch (RuntimeError error) {
@@ -24,7 +25,7 @@ public class Interpreter implements Expr.Visitor<Object>, Stmt.Visitor<Void> {
         Environment previous = environment.enclosing;
         try {
             this.environment = environment;
-            for(Stmt statement: statements) {
+            for (Stmt statement : statements) {
                 execute(statement);
             }
         } finally {
@@ -40,7 +41,7 @@ public class Interpreter implements Expr.Visitor<Object>, Stmt.Visitor<Void> {
 
     @Override
     public Void visitWhileStmt(Stmt.While stmt) {
-        while(isTruthy(evaluate(stmt.condition))) {
+        while (isTruthy(evaluate(stmt.condition))) {
             execute(stmt.body);
         }
         return null;
@@ -48,9 +49,9 @@ public class Interpreter implements Expr.Visitor<Object>, Stmt.Visitor<Void> {
 
     @Override
     public Void visitIfStmt(Stmt.If stmt) {
-        if(isTruthy(evaluate(stmt.condition))) {
+        if (isTruthy(evaluate(stmt.condition))) {
             execute(stmt.thenBranch);
-        } else if(stmt.elseBranch != null) {
+        } else if (stmt.elseBranch != null) {
             execute(stmt.elseBranch);
         }
         return null;
@@ -59,7 +60,7 @@ public class Interpreter implements Expr.Visitor<Object>, Stmt.Visitor<Void> {
     @Override
     public Void visitVarStmt(Stmt.Var stmt) {
         Object val = null;
-        if(stmt.initializer != null) {
+        if (stmt.initializer != null) {
             val = evaluate(stmt.initializer);
         }
         environment.define(stmt.name.lexeme, val);
@@ -103,12 +104,12 @@ public class Interpreter implements Expr.Visitor<Object>, Stmt.Visitor<Void> {
     public Object visitLogicalExpr(Expr.Logical expr) {
         Object left = evaluate(expr.left);
 
-        if(expr.operator.type == OR) {
-            if(isTruthy(left)) {
+        if (expr.operator.type == OR) {
+            if (isTruthy(left)) {
                 return left;
             }
         } else {
-            if(!isTruthy(left)) {
+            if (!isTruthy(left)) {
                 return left;
             }
         }
@@ -182,7 +183,7 @@ public class Interpreter implements Expr.Visitor<Object>, Stmt.Visitor<Void> {
             }
             case SLASH -> {
                 checkNumberOperands(expr.operator, left, right);
-                if((double)right == 0.0d) {
+                if ((double) right == 0.0d) {
                     throw new RuntimeError(expr.operator, "Division by zero not allowed.");
                 }
                 yield (double) left / (double) right;
