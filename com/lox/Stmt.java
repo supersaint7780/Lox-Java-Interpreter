@@ -10,6 +10,7 @@ abstract class Stmt {
         R visitExpressionStmt(Expression stmt);
         R visitPrintStmt(Print stmt);
         R visitVarStmt(Var stmt);
+        R visitWhileStmt(While stmt);
     }
 
     static class If extends Stmt {
@@ -81,6 +82,21 @@ abstract class Stmt {
 
         final Token name;
         final Expr initializer;
+    }
+
+    static class While extends Stmt {
+        While(Expr condition, Stmt body) {
+            this.condition = condition;
+            this.body = body;
+        }
+
+        @Override
+        <R> R accept(Visitor<R> visitor) {
+            return visitor.visitWhileStmt(this);
+        }
+
+        final Expr condition;
+        final Stmt body;
     }
 
     abstract <R> R accept(Visitor<R> visitor);
