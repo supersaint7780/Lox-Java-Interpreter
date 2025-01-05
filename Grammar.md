@@ -4,6 +4,7 @@
 - Values in quotes or block letter indicate terminals
 - Values in smallcase indicate non-terminals
 - | : or i.e either or the given choice
+- The semicolon in the productions/rules is just metasyntax for expressing the grammar
 
 ## Language Grammar
 
@@ -11,7 +12,9 @@
 - expression -> comma ;
 - comma -> assignment ("," assignment)* ;
 - assignment -> IDENTIFIER "=" assignment | conditional;
-- conditional -> equality ("?" conditional ":" conditonal)? ;
+- conditional -> logic_or ("?" conditional ":" conditonal)? ;
+- logic_or -> logic_and ("or" logic_and)* ;
+- logic_and -> equality ("and" equality)* ;
 - equality -> comparison ( ( "!=" | "==" ) comparison )* ;
 - comparison -> term ( ( ">" | ">=" | "<" | "<=" ) term )* ;
 - term -> factor ( ( "-" | "+" ) factor )* ;

@@ -1,5 +1,7 @@
 package com.lox;
 
+import static com.lox.TokenType.OR;
+
 import java.util.List;
 
 public class Interpreter implements Expr.Visitor<Object>, Stmt.Visitor<Void> {
@@ -87,6 +89,22 @@ public class Interpreter implements Expr.Visitor<Object>, Stmt.Visitor<Void> {
 
     private Object evaluate(Expr expr) {
         return expr.accept(this);
+    }
+
+    @Override
+    public Object visitLogicalExpr(Expr.Logical expr) {
+        Object left = evaluate(expr.left);
+
+        if(expr.operator.type == OR) {
+            if(isTruthy(left)) {
+                return left;
+            }
+        } else {
+            if(!isTruthy(left)) {
+                return left;
+            }
+        }
+        return evaluate(expr.right);
     }
 
     @Override
