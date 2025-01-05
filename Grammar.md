@@ -23,6 +23,7 @@
 ### Statement Grammar
 - program -> declaration* EOF;
 - declaration -> varDecl | statement;
-- statement -> exprStmt | printStmt | block;
+- statement -> exprStmt | printStmt | block | ifStmt;
+- ifStmt -> "if" "(" expression ")" statement ("else" statement)? ;
 - block -> "{" declaration* "}";
 - varDecl -> "var" IDENTIFIER ("=" expression)? ";" ; 
