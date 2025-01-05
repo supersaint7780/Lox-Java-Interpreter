@@ -40,9 +40,18 @@ public class Interpreter implements Expr.Visitor<Object>, Stmt.Visitor<Void> {
     }
 
     @Override
+    public Void visitBreakStmt(Stmt.Break stmt) {
+        throw new BreakError();
+    }
+
+    @Override
     public Void visitWhileStmt(Stmt.While stmt) {
-        while (isTruthy(evaluate(stmt.condition))) {
-            execute(stmt.body);
+        while(isTruthy(evaluate(stmt.condition))) {
+            try {
+                execute(stmt.body);
+            } catch(BreakError e) {
+                break;
+            }
         }
         return null;
     }
