@@ -45,6 +45,7 @@ class Parser {
     }
 
     private Stmt function(String kind) {
+        Boolean enclosingFunction = inFunction;
         inFunction = true;
         try {
             Token name = consume(IDENTIFIER, "Expect " + kind + " name.");
@@ -64,7 +65,7 @@ class Parser {
             List<Stmt> body = block();
             return new Stmt.Function(name, parameters, body);
         } finally {
-            inFunction = false;
+            inFunction = enclosingFunction;
         }
     }
 
