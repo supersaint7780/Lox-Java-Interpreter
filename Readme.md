@@ -1,3 +1,6 @@
+<div align="center">
+  <img src="./Logo.png" alt="Lox Logo" />
+</div>
 
 # Lox Programming Language
 
