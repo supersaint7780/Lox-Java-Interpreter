@@ -34,7 +34,8 @@ public class GenerateAst {
             "Var: Token name, Expr initializer",
             "While: Expr condition, Stmt body",
             "Break: Token keyword",
-            "Function: Token name, List<Token> params, List<Stmt> body"
+            "Function: Token name, List<Token> params, List<Stmt> body",
+            "Return: Token keyword, Expr value"
         ));
     }
 

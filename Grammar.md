@@ -31,7 +31,8 @@
 - funDecl -> "fun" function;
 - function -> IDENTIFIER "(" parameters? ")" block;
 - parameters -> IDENTIFIER ("," IDENTIFIER)* ;
-- statement -> exprStmt | printStmt | block | ifStmt | whileStmt | forStmt | breakStmt;
+- statement -> exprStmt | printStmt | block | ifStmt | whileStmt | forStmt | breakStmt | returnStmt;
+- returnStmt -> "return" expression? ";" ;
 - breakStmt -> "break" ";" ;
 - forStmt -> "for" "(" (varDecl | exprStmt | ";") expression? ";" expression? ")" statement;
 - whileStmt -> "while" "(" expression ")" statement;

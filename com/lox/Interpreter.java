@@ -46,7 +46,7 @@ public class Interpreter implements Expr.Visitor<Object>, Stmt.Visitor<Void> {
     }
 
     public void executeBlock(List<Stmt> statements, Environment environment) {
-        Environment previous = environment.enclosing;
+        Environment previous = this.environment;
         try {
             this.environment = environment;
             for (Stmt statement : statements) {
@@ -55,6 +55,15 @@ public class Interpreter implements Expr.Visitor<Object>, Stmt.Visitor<Void> {
         } finally {
             this.environment = previous;
         }
+    }
+
+    @Override
+    public Void visitReturnStmt(Stmt.Return stmt) {
+        Object value = null;
+        if(stmt.value != null) {
+            value = evaluate(stmt.value);
+        }
+        throw new Return(value);
     }
 
     @Override
