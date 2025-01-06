@@ -19,13 +19,18 @@
 - comparison -> term ( ( ">" | ">=" | "<" | "<=" ) term )* ;
 - term -> factor ( ( "-" | "+" ) factor )* ;
 - factor -> unary ( ( "/" | "*" ) unary )* ;
-- unary -> ( "!" | "-" ) unary | primary ;
+- unary -> ( "!" | "-" ) unary | call ;
+- call -> primary ( "(" arguments? ")" )*;
+- arguments -> assignment ("," assignment)*;
 - primary -> NUMBER | STRING | "true" | "false" | "nil" | "(" expression ")" | IDENTIFIER;
 
 
 ### Statement Grammar
 - program -> declaration* EOF;
-- declaration -> varDecl | statement;
+- declaration -> varDecl | statement | funDecl;
+- funDecl -> "fun" function;
+- function -> IDENTIFIER "(" parameters? ")" block;
+- parameters -> IDENTIFIER ("," IDENTIFIER)* ;
 - statement -> exprStmt | printStmt | block | ifStmt | whileStmt | forStmt | breakStmt;
 - breakStmt -> "break" ";" ;
 - forStmt -> "for" "(" (varDecl | exprStmt | ";") expression? ";" expression? ")" statement;
