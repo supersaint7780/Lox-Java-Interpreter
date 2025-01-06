@@ -34,6 +34,8 @@ In addition to the features taught in the book, I have added the following featu
 - **New Operators**:
   - Comma (`,`) (Similar to the comma operator in C)
   - Ternary (`? :`)
+- **Keywords**
+  - break (To exit a loop based on a given condition)
 
 ## Grammar
 
