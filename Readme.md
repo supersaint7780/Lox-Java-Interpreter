@@ -26,6 +26,7 @@ The following features were implemented as guided by *Crafting Interpreters*:
   - Loops: `while`
 - **Functions**: First-class functions with closures.
 - **Classes and Objects**: Class-based object-oriented programming with methods.
+- **Single Inheritance**: Inheritance support along with super keyword.
 
 ### Features Implemented by Me
 
