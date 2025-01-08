@@ -11,7 +11,7 @@
 ### Expression Grammar
 - expression -> comma ;
 - comma -> assignment ("," assignment)* ;
-- assignment -> IDENTIFIER "=" assignment | conditional;
+- assignment -> (call ".")? IDENTIFIER "=" assignment | conditional;
 - conditional -> logic_or ("?" conditional ":" conditonal)? ;
 - logic_or -> logic_and ("or" logic_and)* ;
 - logic_and -> equality ("and" equality)* ;
@@ -20,14 +20,15 @@
 - term -> factor ( ( "-" | "+" ) factor )* ;
 - factor -> unary ( ( "/" | "*" ) unary )* ;
 - unary -> ( "!" | "-" ) unary | call ;
-- call -> primary ( "(" arguments? ")" )*;
+- call -> primary ( "(" arguments? ")" | "." IDENTIFIER )*;
 - arguments -> assignment ("," assignment)*;
 - primary -> NUMBER | STRING | "true" | "false" | "nil" | "(" expression ")" | IDENTIFIER;
 
 
 ### Statement Grammar
 - program -> declaration* EOF;
-- declaration -> varDecl | statement | funDecl;
+- declaration -> varDecl | statement | funDecl | classDecl;
+- classDecl -> "class" IDENTIFIER "{" function* "}";
 - funDecl -> "fun" function;
 - function -> IDENTIFIER "(" parameters? ")" block;
 - parameters -> IDENTIFIER ("," IDENTIFIER)* ;

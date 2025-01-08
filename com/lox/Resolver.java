@@ -5,7 +5,7 @@ import java.util.Map;
 import java.util.List;
 import java.util.Stack;
 
-public class Resolver implements Expr.Visitor<Void>, Stmt.Visitor<Object> {
+public class Resolver implements Expr.Visitor<Void>, Stmt.Visitor<Void> {
     private final Interpreter interpreter;
     private final Stack<Map<String, Boolean>> scopes = new Stack<>();
     private FunctionType currentFunction = FunctionType.NONE;
@@ -16,11 +16,12 @@ public class Resolver implements Expr.Visitor<Void>, Stmt.Visitor<Object> {
 
     private enum FunctionType {
         NONE,
-        FUNCTION
+        FUNCTION,
+        METHOD
     }
 
     public void resolve(List<Stmt> statements) {
-        for(Stmt statement: statements) {
+        for (Stmt statement : statements) {
             resolve(statement);
         }
     }
@@ -34,8 +35,8 @@ public class Resolver implements Expr.Visitor<Void>, Stmt.Visitor<Object> {
     }
 
     private void resolveLocal(Expr expr, Token name) {
-        for(int i=scopes.size()-1;i>=0;--i) {
-            if(scopes.get(i).containsKey(name.lexeme)) {
+        for (int i = scopes.size() - 1; i >= 0; --i) {
+            if (scopes.get(i).containsKey(name.lexeme)) {
                 interpreter.resolve(expr, scopes.size() - i - 1);
                 return;
             }
@@ -46,10 +47,10 @@ public class Resolver implements Expr.Visitor<Void>, Stmt.Visitor<Object> {
         FunctionType enclosingFunction = currentFunction;
         currentFunction = type;
         beginScope();
-        for(Token parameter: function.params) {
+        for (Token parameter : function.params) {
             declare(parameter);
             define(parameter);
-        } 
+        }
         resolve(function.body);
         endScope();
         currentFunction = enclosingFunction;
@@ -58,40 +59,40 @@ public class Resolver implements Expr.Visitor<Void>, Stmt.Visitor<Object> {
     private void beginScope() {
         scopes.push(new HashMap<String, Boolean>());
     }
-    
+
     private void endScope() {
         scopes.pop();
     }
 
     private void declare(Token name) {
-        if(scopes.empty()) {
+        if (scopes.empty()) {
             return;
         }
         Map<String, Boolean> scope = scopes.peek();
-        if(scope.containsKey(name.lexeme)) {
+        if (scope.containsKey(name.lexeme)) {
             Lox.error(name, "Already a variable with this name in this scope.");
         }
         scope.put(name.lexeme, false);
     }
 
     private void define(Token name) {
-        if(!scopes.empty()) {
+        if (!scopes.empty()) {
             scopes.peek().put(name.lexeme, true);
         }
     }
 
     @Override
-    public Object visitIfStmt(Stmt.If stmt) {
+    public Void visitIfStmt(Stmt.If stmt) {
         resolve(stmt.condition);
         resolve(stmt.thenBranch);
-        if(stmt.elseBranch != null) {
+        if (stmt.elseBranch != null) {
             resolve(stmt.elseBranch);
         }
         return null;
     }
 
     @Override
-    public Object visitBlockStmt(Stmt.Block stmt) {
+    public Void visitBlockStmt(Stmt.Block stmt) {
         beginScope();
         resolve(stmt.statements);
         endScope();
@@ -99,21 +100,21 @@ public class Resolver implements Expr.Visitor<Void>, Stmt.Visitor<Object> {
     }
 
     @Override
-    public Object visitExpressionStmt(Stmt.Expression stmt) {
+    public Void visitExpressionStmt(Stmt.Expression stmt) {
         resolve(stmt.expression);
         return null;
     }
 
     @Override
-    public Object visitPrintStmt(Stmt.Print stmt) {
+    public Void visitPrintStmt(Stmt.Print stmt) {
         resolve(stmt.expression);
         return null;
     }
 
     @Override
-    public Object visitVarStmt(Stmt.Var stmt) {
+    public Void visitVarStmt(Stmt.Var stmt) {
         declare(stmt.name);
-        if(stmt.initializer != null) {
+        if (stmt.initializer != null) {
             resolve(stmt.initializer);
         }
         define(stmt.name);
@@ -121,19 +122,19 @@ public class Resolver implements Expr.Visitor<Void>, Stmt.Visitor<Object> {
     }
 
     @Override
-    public Object visitWhileStmt(Stmt.While stmt) {
+    public Void visitWhileStmt(Stmt.While stmt) {
         resolve(stmt.condition);
         resolve(stmt.body);
         return null;
     }
 
     @Override
-    public Object visitBreakStmt(Stmt.Break stmt) {
+    public Void visitBreakStmt(Stmt.Break stmt) {
         return null;
     }
 
     @Override
-    public Object visitFunctionStmt(Stmt.Function stmt) {
+    public Void visitFunctionStmt(Stmt.Function stmt) {
         declare(stmt.name);
         define(stmt.name);
         resolveFunction(stmt, FunctionType.FUNCTION);
@@ -141,11 +142,23 @@ public class Resolver implements Expr.Visitor<Void>, Stmt.Visitor<Object> {
     }
 
     @Override
-    public Object visitReturnStmt(Stmt.Return stmt) {
-        if(currentFunction == FunctionType.NONE) {
+    public Void visitClassStmt(Stmt.Class stmt) {
+        declare(stmt.name);
+        define(stmt.name);
+
+        for(Stmt.Function method: stmt.methods) {
+            FunctionType declaration = FunctionType.METHOD;
+            resolveFunction(method, declaration);
+        }
+        return null;
+    }
+
+    @Override
+    public Void visitReturnStmt(Stmt.Return stmt) {
+        if (currentFunction == FunctionType.NONE) {
             Lox.error(stmt.keyword, "Can't return from top-level code.");
         }
-        if(stmt.value != null) {
+        if (stmt.value != null) {
             resolve(stmt.value);
         }
         return null;
@@ -155,6 +168,19 @@ public class Resolver implements Expr.Visitor<Void>, Stmt.Visitor<Object> {
     public Void visitLogicalExpr(Expr.Logical expr) {
         resolve(expr.left);
         resolve(expr.right);
+        return null;
+    }
+
+    @Override
+    public Void visitGetExpr(Expr.Get expr) {
+        resolve(expr.object);
+        return null;
+    }
+
+    @Override
+    public Void visitSetExpr(Expr.Set expr) {
+        resolve(expr.object);
+        resolve(expr.value);
         return null;
     }
 
@@ -199,7 +225,7 @@ public class Resolver implements Expr.Visitor<Void>, Stmt.Visitor<Object> {
 
     @Override
     public Void visitVariableExpr(Expr.Variable expr) {
-        if(!scopes.isEmpty() && scopes.peek().get(expr.name.lexeme) == Boolean.FALSE) {
+        if (!scopes.isEmpty() && scopes.peek().get(expr.name.lexeme) == Boolean.FALSE) {
             Lox.error(expr.name, "Can't read local variable in its own initializer");
         }
         resolveLocal(expr, expr.name);
@@ -209,7 +235,7 @@ public class Resolver implements Expr.Visitor<Void>, Stmt.Visitor<Object> {
     @Override
     public Void visitCallExpr(Expr.Call expr) {
         resolve(expr.callee);
-        for(Expr argument: expr.arguments) {
+        for (Expr argument : expr.arguments) {
             resolve(argument);
         }
         return null;
